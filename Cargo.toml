@@ -1,0 +1,126 @@
+[package]
+name = "psa-platform"
+version = "0.1.0"
+edition = "2024"
+authors = ["PSA Platform Team"]
+description = "Professional Services Automation platform for MSPs"
+license = "Proprietary"
+repository = "https://github.com/your-org/psa-platform"
+
+[features]
+default = ["multi-tenant", "server", "web"]
+# Deployment modes - mutually exclusive at compile time
+multi-tenant = []
+single-tenant = []
+# Build targets
+server = ["dioxus/server", "dep:axum", "dep:tower", "dep:tower-http", "dep:sqlx", "dep:lettre"]
+web = ["dioxus/web"]
+fullstack = ["server", "web"]
+
+[dependencies]
+# Dioxus - fullstack framework
+dioxus = { version = "0.7.2", features = ["fullstack", "router"] }
+
+# Axum - HTTP server (server-side only)
+axum = { version = "0.8.3", features = ["macros", "multipart", "ws"], optional = true }
+tower = { version = "0.5", features = ["full"], optional = true }
+tower-http = { version = "0.6", features = ["cors", "trace", "compression-gzip", "limit", "request-id"], optional = true }
+
+# Database
+sqlx = { version = "0.8", features = ["runtime-tokio", "postgres", "uuid", "chrono", "json", "migrate"], optional = true }
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# UUID
+uuid = { version = "1.11", features = ["v4", "v7", "serde"] }
+
+# Date/Time
+chrono = { version = "0.4", features = ["serde"] }
+
+# Password hashing
+argon2 = "0.5"
+
+# JWT tokens
+jsonwebtoken = "9"
+
+# Validation
+validator = { version = "0.19", features = ["derive"] }
+
+# Error handling
+thiserror = "2"
+anyhow = "1"
+
+# Logging/Tracing
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Environment
+dotenvy = "0.15"
+
+# Email
+lettre = { version = "0.11", features = ["tokio1-native-tls", "builder"], optional = true }
+
+# HTTP client (for RMM integration, etc.)
+reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
+
+# Encryption
+aes-gcm = "0.10"
+base64 = "0.22"
+rand = "0.9"
+
+# Rate limiting
+governor = "0.8"
+
+# Caching
+moka = { version = "0.12", features = ["future"] }
+
+# Webhook/HTTP client for notifications
+# (reqwest already included above)
+
+# WASM specific (client-side)
+gloo-net = "0.6"
+wasm-bindgen = "0.2"
+web-sys = { version = "0.3", features = ["Window", "Document", "Storage", "Navigator"] }
+js-sys = "0.3"
+
+# Markdown rendering
+pulldown-cmark = "0.12"
+
+# Template rendering
+minijinja = "2"
+
+# Regex for email parsing rules
+regex = "1"
+
+# Cron expressions for scheduled tasks
+cron = "0.15"
+
+# URL parsing
+url = "2"
+
+[build-dependencies]
+# For build scripts if needed
+
+[dev-dependencies]
+# Testing
+tokio-test = "0.4"
+fake = { version = "3", features = ["derive", "uuid", "chrono"] }
+wiremock = "0.6"
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
+
+[profile.dev]
+# Faster compile times for development
+opt-level = 0
+
+[profile.dev.package."*"]
+opt-level = 3
