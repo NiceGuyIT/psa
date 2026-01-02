@@ -579,3 +579,137 @@ pub struct AutomationAction {
     pub action_type: String,
     pub params: serde_json::Value,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_ticket_source_from_str() {
+        assert_eq!(TicketSource::from_str("portal"), Some(TicketSource::Portal));
+        assert_eq!(TicketSource::from_str("email"), Some(TicketSource::Email));
+        assert_eq!(TicketSource::from_str("phone"), Some(TicketSource::Phone));
+        assert_eq!(TicketSource::from_str("api"), Some(TicketSource::Api));
+        assert_eq!(TicketSource::from_str("rmm"), Some(TicketSource::Rmm));
+        assert_eq!(TicketSource::from_str("invalid"), None);
+    }
+
+    #[test]
+    fn test_ticket_source_as_str() {
+        assert_eq!(TicketSource::Portal.as_str(), "portal");
+        assert_eq!(TicketSource::Email.as_str(), "email");
+        assert_eq!(TicketSource::Phone.as_str(), "phone");
+        assert_eq!(TicketSource::Rmm.as_str(), "rmm");
+    }
+
+    #[test]
+    fn test_billing_status_from_str() {
+        assert_eq!(BillingStatus::from_str("not_billed"), Some(BillingStatus::NotBilled));
+        assert_eq!(BillingStatus::from_str("ready_to_bill"), Some(BillingStatus::ReadyToBill));
+        assert_eq!(BillingStatus::from_str("billed"), Some(BillingStatus::Billed));
+        assert_eq!(BillingStatus::from_str("unknown"), None);
+    }
+
+    #[test]
+    fn test_billing_status_as_str() {
+        assert_eq!(BillingStatus::NotBilled.as_str(), "not_billed");
+        assert_eq!(BillingStatus::ReadyToBill.as_str(), "ready_to_bill");
+        assert_eq!(BillingStatus::Billed.as_str(), "billed");
+    }
+
+    #[test]
+    fn test_note_type_from_str() {
+        assert_eq!(NoteType::from_str("internal"), Some(NoteType::Internal));
+        assert_eq!(NoteType::from_str("public"), Some(NoteType::Public));
+        assert_eq!(NoteType::from_str("resolution"), Some(NoteType::Resolution));
+        assert_eq!(NoteType::from_str("time_entry"), Some(NoteType::TimeEntry));
+        assert_eq!(NoteType::from_str("other"), None);
+    }
+
+    #[test]
+    fn test_note_type_as_str() {
+        assert_eq!(NoteType::Internal.as_str(), "internal");
+        assert_eq!(NoteType::Public.as_str(), "public");
+        assert_eq!(NoteType::Resolution.as_str(), "resolution");
+    }
+
+    #[test]
+    fn test_automation_trigger_from_str() {
+        assert_eq!(AutomationTrigger::from_str("on_create"), Some(AutomationTrigger::OnCreate));
+        assert_eq!(AutomationTrigger::from_str("on_update"), Some(AutomationTrigger::OnUpdate));
+        assert_eq!(AutomationTrigger::from_str("on_sla_breach"), Some(AutomationTrigger::OnSlaBreach));
+        assert_eq!(AutomationTrigger::from_str("invalid"), None);
+    }
+
+    #[test]
+    fn test_automation_trigger_as_str() {
+        assert_eq!(AutomationTrigger::OnCreate.as_str(), "on_create");
+        assert_eq!(AutomationTrigger::OnUpdate.as_str(), "on_update");
+        assert_eq!(AutomationTrigger::OnSlaBreach.as_str(), "on_sla_breach");
+    }
+
+    #[test]
+    fn test_ticket_sla_status() {
+        // Create a test ticket
+        let mut ticket = Ticket {
+            id: Uuid::new_v4(),
+            tenant_id: Uuid::new_v4(),
+            ticket_number: "TKT-001".to_string(),
+            title: "Test Ticket".to_string(),
+            description: Some("Test description".to_string()),
+            status_id: Uuid::new_v4(),
+            priority_id: Uuid::new_v4(),
+            type_id: None,
+            category_id: None,
+            subcategory_id: None,
+            queue_id: Uuid::new_v4(),
+            source: TicketSource::Portal,
+            company_id: Uuid::new_v4(),
+            contact_id: None,
+            site_id: None,
+            assigned_to_id: None,
+            team_id: None,
+            parent_ticket_id: None,
+            contract_id: None,
+            sla_id: None,
+            sla_due_date: None,
+            first_response_due: None,
+            first_response_at: None,
+            resolution_due: None,
+            resolved_at: None,
+            closed_at: None,
+            scheduled_start: None,
+            scheduled_end: None,
+            estimated_hours: None,
+            actual_hours: 0.0,
+            is_billable: false,
+            billing_status: BillingStatus::NotBilled,
+            asset_id: None,
+            custom_fields: serde_json::json!({}),
+            tags: vec![],
+            created_by_id: Uuid::new_v4(),
+            last_updated_by_id: None,
+            created_at: Utc::now(),
+            updated_at: Utc::now(),
+        };
+
+        // Test no SLA due date (should be NotApplicable)
+        assert_eq!(ticket.sla_status(), SlaStatus::NotApplicable);
+
+        // Test on track (due date in future, more than 2 hours)
+        ticket.sla_due_date = Some(Utc::now() + chrono::Duration::hours(3));
+        assert_eq!(ticket.sla_status(), SlaStatus::OnTrack);
+
+        // Test warning (due date in less than 2 hours)
+        ticket.sla_due_date = Some(Utc::now() + chrono::Duration::hours(1));
+        assert_eq!(ticket.sla_status(), SlaStatus::Warning);
+
+        // Test breached (due date in past)
+        ticket.sla_due_date = Some(Utc::now() - chrono::Duration::hours(2));
+        assert_eq!(ticket.sla_status(), SlaStatus::Breached);
+
+        // Test closed ticket (should be NotApplicable)
+        ticket.closed_at = Some(Utc::now());
+        assert_eq!(ticket.sla_status(), SlaStatus::NotApplicable);
+    }
+}

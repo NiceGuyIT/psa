@@ -27,11 +27,6 @@ pub struct AppState {
 
 /// Create the main API router with all routes
 pub fn create_api_router(db: Database, jwt_secret: String) -> Router {
-    let state = AppState {
-        db: db.clone(),
-        jwt_secret: jwt_secret.clone(),
-    };
-
     // Create services
     let auth_service = AuthService::new(db.clone(), jwt_secret.clone());
     let tenant_service = TenantService::new(db.clone());
@@ -120,7 +115,6 @@ pub fn create_api_router(db: Database, jwt_secret: String) -> Router {
                 .allow_methods(Any)
                 .allow_headers(Any),
         )
-        .with_state(state)
 }
 
 /// Health check endpoint
@@ -129,7 +123,10 @@ async fn health_check() -> &'static str {
 }
 
 /// Stub routes for modules not yet implemented
-fn stub_routes() -> Router<AppState> {
+fn stub_routes<S>() -> Router<S>
+where
+    S: Clone + Send + Sync + 'static,
+{
     Router::new()
         .route("/", get(not_implemented))
         .route("/:id", get(not_implemented))

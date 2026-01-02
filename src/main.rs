@@ -82,24 +82,73 @@ impl AppConfig {
 }
 
 fn main() {
-    // Initialize tracing/logging
-    tracing_subscriber::fmt()
-        .with_env_filter(
-            tracing_subscriber::EnvFilter::from_default_env()
-                .add_directive("psa_platform=debug".parse().unwrap())
-                .add_directive("tower_http=debug".parse().unwrap()),
-        )
-        .init();
+    // Initialize tracing/logging (server-side only - not available in WASM)
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        tracing_subscriber::fmt()
+            .with_env_filter(
+                tracing_subscriber::EnvFilter::from_default_env()
+                    .add_directive("psa_platform=debug".parse().unwrap())
+                    .add_directive("tower_http=debug".parse().unwrap()),
+            )
+            .init();
 
-    tracing::info!("Starting PSA Platform");
+        tracing::info!("Starting PSA Platform");
 
-    #[cfg(feature = "multi-tenant")]
-    tracing::info!("Running in multi-tenant mode");
+        #[cfg(feature = "multi-tenant")]
+        tracing::info!("Running in multi-tenant mode");
 
-    #[cfg(feature = "single-tenant")]
-    tracing::info!("Running in single-tenant mode");
+        #[cfg(feature = "single-tenant")]
+        tracing::info!("Running in single-tenant mode");
+    }
 
-    // Launch Dioxus application
+    // Server-side: Use dioxus::serve with custom API routes
+    #[cfg(feature = "server")]
+    dioxus::serve(|| async move {
+        use psa_platform::{api::create_api_router, Database};
+
+        // Load configuration
+        let config = AppConfig::from_env().expect("Failed to load configuration");
+
+        // Try to initialize database (optional for development)
+        let db_result = Database::new(&config.database_url).await;
+
+        // Create router based on database availability
+        let router = match db_result {
+            Ok(db) => {
+                // Run migrations if enabled and database is available
+                if config.run_migrations {
+                    if let Err(e) = db.run_migrations().await {
+                        tracing::warn!("Failed to run migrations: {}", e);
+                    } else {
+                        tracing::info!("Database migrations complete");
+                    }
+                }
+
+                tracing::info!("Database connected");
+
+                // Create the API router with database and JWT secret
+                let api_router = create_api_router(db, config.jwt_secret);
+
+                // Merge with Dioxus router
+                dioxus::server::router(App).merge(api_router)
+            }
+            Err(e) => {
+                tracing::warn!("Database not available: {}. API routes will not be mounted.", e);
+                tracing::warn!("To enable API routes, start PostgreSQL and restart the server.");
+
+                // Return just the Dioxus router without API routes
+                dioxus::server::router(App)
+            }
+        };
+
+        tracing::info!("Server ready");
+
+        Ok(router)
+    });
+
+    // Client-side (WASM): Use dioxus::launch
+    #[cfg(not(feature = "server"))]
     dioxus::launch(App);
 }
 
@@ -107,6 +156,7 @@ fn main() {
 #[component]
 fn App() -> Element {
     rsx! {
+        document::Stylesheet { href: asset!("/assets/styles.css") }
         Router::<Route> {}
     }
 }

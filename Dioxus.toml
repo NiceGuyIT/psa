@@ -1,21 +1,25 @@
-# Dioxus Configuration
-# See: https://dioxuslabs.com/learn/0.6/reference/config
+# Configure Dioxus
+# https://dioxuslabs.com/learn/0.7/guides/tools/configure
 
 [application]
+# App name
 name = "psa-platform"
+
+# Dioxus App Default Platform
 default_platform = "fullstack"
+
+# resource (assets) file folder
+asset_dir = "assets"
 
 # Asset configuration
 [web.app]
+# HTML title tag content
 title = "PSA Platform"
 
+# CSS is included via asset!() macro in Rust code
 [web.resource]
-# CSS files to include
-style = ["/assets/styles.css"]
 
 [web.resource.dev]
-# Development-only resources
-style = []
 
 [server]
 # Server configuration

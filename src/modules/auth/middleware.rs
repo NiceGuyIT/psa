@@ -113,14 +113,19 @@ where
     }
 }
 
+/// Trait for role-based authorization requirements
+pub trait RoleRequirement {
+    fn allowed_roles() -> &'static [&'static str];
+}
+
 /// Extractor for requiring a specific role
 #[derive(Clone)]
-pub struct RequireRole<const ROLES: &'static [&'static str]>(pub CurrentUser);
+pub struct RequireRole<R: RoleRequirement>(pub CurrentUser, std::marker::PhantomData<R>);
 
-impl<S, const ROLES: &'static [&'static str]> axum::extract::FromRequestParts<S>
-    for RequireRole<ROLES>
+impl<S, R> axum::extract::FromRequestParts<S> for RequireRole<R>
 where
     S: Send + Sync,
+    R: RoleRequirement,
 {
     type Rejection = AppError;
 
@@ -137,8 +142,8 @@ where
         match auth_state.user {
             Some(user) => {
                 let user_role = user.role.as_str();
-                if ROLES.contains(&user_role) {
-                    Ok(RequireRole(user))
+                if R::allowed_roles().contains(&user_role) {
+                    Ok(RequireRole(user, std::marker::PhantomData))
                 } else {
                     Err(AppError::Forbidden(
                         "Insufficient permissions".to_string(),
@@ -150,10 +155,34 @@ where
     }
 }
 
+/// Admin role requirement
+pub struct AdminRoles;
+impl RoleRequirement for AdminRoles {
+    fn allowed_roles() -> &'static [&'static str] {
+        &["super_admin", "admin"]
+    }
+}
+
+/// Manager role requirement
+pub struct ManagerRoles;
+impl RoleRequirement for ManagerRoles {
+    fn allowed_roles() -> &'static [&'static str] {
+        &["super_admin", "admin", "manager"]
+    }
+}
+
+/// Finance role requirement
+pub struct FinanceRoles;
+impl RoleRequirement for FinanceRoles {
+    fn allowed_roles() -> &'static [&'static str] {
+        &["super_admin", "admin", "finance"]
+    }
+}
+
 /// Helper type aliases for common role requirements
-pub type RequireAdmin = RequireRole<{ &["super_admin", "admin"] }>;
-pub type RequireManager = RequireRole<{ &["super_admin", "admin", "manager"] }>;
-pub type RequireFinance = RequireRole<{ &["super_admin", "admin", "finance"] }>;
+pub type RequireAdmin = RequireRole<AdminRoles>;
+pub type RequireManager = RequireRole<ManagerRoles>;
+pub type RequireFinance = RequireRole<FinanceRoles>;
 
 /// Get the current user's tenant ID from the request
 pub fn get_tenant_id(request: &Request) -> Option<uuid::Uuid> {

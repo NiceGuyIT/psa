@@ -58,7 +58,7 @@ impl Database {
 
     /// Get a connection from the pool with tenant context set
     #[cfg(feature = "multi-tenant")]
-    pub async fn with_tenant(&self, tenant_id: uuid::Uuid) -> AppResult<TenantConnection<'_>> {
+    pub async fn with_tenant(&self, tenant_id: uuid::Uuid) -> AppResult<TenantConnection> {
         use sqlx::Executor;
 
         let mut conn = self.pool.acquire().await?;
@@ -104,20 +104,20 @@ impl Database {
 
 /// A database connection with tenant context set
 #[cfg(feature = "multi-tenant")]
-pub struct TenantConnection<'a> {
+pub struct TenantConnection {
     conn: sqlx::pool::PoolConnection<sqlx::Postgres>,
     tenant_id: uuid::Uuid,
 }
 
 #[cfg(feature = "multi-tenant")]
-impl<'a> TenantConnection<'a> {
+impl TenantConnection {
     pub fn tenant_id(&self) -> uuid::Uuid {
         self.tenant_id
     }
 }
 
 #[cfg(feature = "multi-tenant")]
-impl<'a> std::ops::Deref for TenantConnection<'a> {
+impl std::ops::Deref for TenantConnection {
     type Target = sqlx::pool::PoolConnection<sqlx::Postgres>;
 
     fn deref(&self) -> &Self::Target {
@@ -126,7 +126,7 @@ impl<'a> std::ops::Deref for TenantConnection<'a> {
 }
 
 #[cfg(feature = "multi-tenant")]
-impl<'a> std::ops::DerefMut for TenantConnection<'a> {
+impl std::ops::DerefMut for TenantConnection {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.conn
     }

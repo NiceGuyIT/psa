@@ -53,26 +53,26 @@ then
     chown --no-dereference ${NONROOT_USER}:${NONROOT_GROUP} /home/${NONROOT_USER}/.config/${program}
   fi
 
-#  # Nushell uses $XDG_CONFIG_HOME for the config directory.
-#  program=nushell
-#  if [[ -d /.jbdevcontainer/config/ ]]
-#  then
-#    if [[ ! -e /.jbdevcontainer/config/${program} ]]
-#    then
-#      echo "Moving '/home/${NONROOT_USER}/.config/${program}' to '/.jbdevcontainer/config/'"
-#      sudoIf mv /home/${NONROOT_USER}/.config/${program} /.jbdevcontainer/config/
-#      sudoIf chown --recursive ${NONROOT_USER}:${NONROOT_GROUP} /.jbdevcontainer/config/${program}
-#    fi
-#
-#    # The jbdevcontainer image exists but a new container image may not have the symlink in the home directory.
-#    # Remove the directory so the symlink below works.
-#    [[ -e /home/${NONROOT_USER}/.config/${program} ]] && rm -r /home/${NONROOT_USER}/.config/${program}
-#    [[ -L /home/${NONROOT_USER}/.config/${program} ]] && rm /home/${NONROOT_USER}/.config/${program}
-#
-#    # Symlink the container's config to the persistent config.
-#    ln -s /.jbdevcontainer/config/${program} /home/${NONROOT_USER}/.config/${program}
-#    chown --no-dereference ${NONROOT_USER}:${NONROOT_GROUP} /home/${NONROOT_USER}/.config/${program}
-#  fi
+  # Nushell uses $XDG_CONFIG_HOME for the config directory.
+  program=nushell
+  if [[ -d /.jbdevcontainer/config/ ]]
+  then
+    if [[ ! -e /.jbdevcontainer/config/${program} ]]
+    then
+      echo "Moving '/home/${NONROOT_USER}/.config/${program}' to '/.jbdevcontainer/config/'"
+      sudoIf mv /home/${NONROOT_USER}/.config/${program} /.jbdevcontainer/config/
+      sudoIf chown --recursive ${NONROOT_USER}:${NONROOT_GROUP} /.jbdevcontainer/config/${program}
+    fi
+
+    # The jbdevcontainer image exists but a new container image may not have the symlink in the home directory.
+    # Remove the directory so the symlink below works.
+    [[ -e /home/${NONROOT_USER}/.config/${program} ]] && rm -r /home/${NONROOT_USER}/.config/${program}
+    [[ -L /home/${NONROOT_USER}/.config/${program} ]] && rm /home/${NONROOT_USER}/.config/${program}
+
+    # Symlink the container's config to the persistent config.
+    ln -s /.jbdevcontainer/config/${program} /home/${NONROOT_USER}/.config/${program}
+    chown --no-dereference ${NONROOT_USER}:${NONROOT_GROUP} /home/${NONROOT_USER}/.config/${program}
+  fi
 
   # Bun uses $XDG_CONFIG_HOME the .bun directory.
   program=bun

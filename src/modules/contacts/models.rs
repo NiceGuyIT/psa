@@ -340,6 +340,27 @@ pub enum ContactStatus {
     Inactive,
 }
 
+impl ContactStatus {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            ContactStatus::Active => "active",
+            ContactStatus::Inactive => "inactive",
+        }
+    }
+}
+
+impl std::str::FromStr for ContactStatus {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "active" => Ok(ContactStatus::Active),
+            "inactive" => Ok(ContactStatus::Inactive),
+            _ => Err(format!("Unknown contact status: {}", s)),
+        }
+    }
+}
+
 /// Contact database model
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Contact {

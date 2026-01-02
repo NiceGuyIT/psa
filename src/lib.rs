@@ -10,6 +10,7 @@ pub mod db;
 pub mod hooks;
 pub mod modules;
 pub mod pages;
+pub mod server_fns;
 pub mod utils;
 
 // Re-export commonly used types

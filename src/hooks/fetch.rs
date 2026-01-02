@@ -141,14 +141,17 @@ where
 }
 
 /// API client for making HTTP requests
-#[cfg(feature = "web")]
 pub mod api {
+    #[cfg(feature = "web")]
     use gloo_net::http::Request;
+    #[cfg(feature = "web")]
     use serde::{de::DeserializeOwned, Serialize};
 
+    #[cfg(feature = "web")]
     const API_BASE: &str = "/api/v1";
 
     /// Get request
+    #[cfg(feature = "web")]
     pub async fn get<T: DeserializeOwned>(path: &str) -> Result<T, String> {
         let url = format!("{}{}", API_BASE, path);
 
@@ -169,6 +172,7 @@ pub mod api {
     }
 
     /// Get request with auth token
+    #[cfg(feature = "web")]
     pub async fn get_with_auth<T: DeserializeOwned>(path: &str, token: &str) -> Result<T, String> {
         let url = format!("{}{}", API_BASE, path);
 
@@ -190,6 +194,7 @@ pub mod api {
     }
 
     /// Post request
+    #[cfg(feature = "web")]
     pub async fn post<T: DeserializeOwned, B: Serialize>(
         path: &str,
         body: &B,
@@ -215,6 +220,7 @@ pub mod api {
     }
 
     /// Post request with auth token
+    #[cfg(feature = "web")]
     pub async fn post_with_auth<T: DeserializeOwned, B: Serialize>(
         path: &str,
         body: &B,
@@ -242,6 +248,7 @@ pub mod api {
     }
 
     /// Put request with auth token
+    #[cfg(feature = "web")]
     pub async fn put_with_auth<T: DeserializeOwned, B: Serialize>(
         path: &str,
         body: &B,
@@ -269,6 +276,7 @@ pub mod api {
     }
 
     /// Delete request with auth token
+    #[cfg(feature = "web")]
     pub async fn delete_with_auth(path: &str, token: &str) -> Result<(), String> {
         let url = format!("{}{}", API_BASE, path);
 
@@ -288,11 +296,4 @@ pub mod api {
             ))
         }
     }
-}
-
-/// Server-side API functions
-#[cfg(feature = "server")]
-pub mod api {
-    // Server-side implementations would go here
-    // These would be server functions that can be called from the client
 }

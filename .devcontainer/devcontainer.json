@@ -8,6 +8,8 @@
   // Custom image based on openSUSE Leap 15.6: https://github.com/niceguyit/oci-images/pkgs/container/opensuse-base
   "image": "ghcr.io/niceguyit/opensuse-dev:v0.7.0-leap-16.0",
   // "image": "opensuse-dev:v0.6.0-leap-16.0",
+  // For application development
+  "forwardPorts": ["localhost:3000", "8080"],
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": {
     // FIXME: It seems JetBrains does not run postCreateCommand as the user.

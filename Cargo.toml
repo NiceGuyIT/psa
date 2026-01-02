@@ -1,7 +1,7 @@
 [package]
 name = "psa-platform"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
 authors = ["PSA Platform Team"]
 description = "Professional Services Automation platform for MSPs"
 license = "Proprietary"
@@ -14,7 +14,7 @@ multi-tenant = []
 single-tenant = []
 # Build targets
 server = ["dioxus/server", "dioxus/fullstack", "dep:axum", "dep:tower", "dep:tower-http", "dep:sqlx", "dep:lettre", "dep:governor", "dep:moka", "dep:rust_decimal"]
-web = ["dioxus/web", "uuid/js"]
+web = ["dioxus/web", "dioxus/fullstack", "uuid/js"]
 fullstack = ["server", "web"]
 
 [dependencies]
@@ -27,7 +27,7 @@ tower = { version = "0.5", features = ["full"], optional = true }
 tower-http = { version = "0.6", features = ["cors", "trace", "compression-gzip", "limit", "request-id"], optional = true }
 
 # Database
-sqlx = { version = "0.8", features = ["runtime-tokio", "postgres", "uuid", "chrono", "json", "migrate"], optional = true }
+sqlx = { version = "0.8", features = ["runtime-tokio", "postgres", "uuid", "chrono", "json", "migrate", "rust_decimal"], optional = true }
 
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
