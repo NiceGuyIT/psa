@@ -1,0 +1,30 @@
+[package]
+name = "milestones"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Milestones - Standalone project management application"
+
+[[bin]]
+name = "milestones"
+path = "src/main.rs"
+
+[features]
+default = ["fullstack"]
+server = ["dioxus/server", "psa-core/server", "psa-projects/server"]
+web = ["psa-core/web", "psa-projects/web"]
+fullstack = ["server", "web"]
+
+[dependencies]
+psa-core = { workspace = true }
+psa-ui = { workspace = true }
+psa-projects = { workspace = true }
+dioxus = { workspace = true }
+serde = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+dotenvy = { workspace = true }
+tokio = { workspace = true }

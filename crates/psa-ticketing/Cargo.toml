@@ -1,0 +1,52 @@
+[package]
+name = "psa-ticketing"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Ticketing module for PSA Platform - service desk, SLAs, and email integration"
+
+[features]
+default = ["server"]
+server = ["dep:axum", "dep:sqlx", "psa-core/server"]
+web = ["psa-core/web", "dep:gloo-net"]
+fullstack = ["server", "web"]
+
+[dependencies]
+# Core shared functionality
+psa-core = { workspace = true }
+
+# UI components (for views)
+psa-ui = { workspace = true }
+
+# Dioxus framework
+dioxus = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# UUID
+uuid = { workspace = true }
+
+# Date/Time
+chrono = { workspace = true }
+
+# Validation
+validator = { workspace = true }
+
+# Error handling
+thiserror = { workspace = true }
+
+# Logging
+tracing = { workspace = true }
+
+# Server-side dependencies (optional)
+axum = { workspace = true, optional = true }
+sqlx = { workspace = true, optional = true }
+
+# Client-side dependencies (optional)
+gloo-net = { workspace = true, optional = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }

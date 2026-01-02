@@ -1,0 +1,16 @@
+[application]
+name = "resolver"
+default_platform = "fullstack"
+
+[web.app]
+title = "Resolver - Help Desk & Ticketing"
+
+[web.watcher]
+reload_html = true
+watch_path = ["src", "../../crates"]
+
+[web.resource]
+style = ["/assets/styles.css"]
+
+[[web.proxy]]
+backend = "http://localhost:8080/api"

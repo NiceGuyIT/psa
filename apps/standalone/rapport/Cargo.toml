@@ -1,0 +1,30 @@
+[package]
+name = "rapport"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Rapport - Standalone CRM application"
+
+[[bin]]
+name = "rapport"
+path = "src/main.rs"
+
+[features]
+default = ["fullstack"]
+server = ["dioxus/server", "psa-core/server", "psa-crm/server"]
+web = ["psa-core/web", "psa-crm/web"]
+fullstack = ["server", "web"]
+
+[dependencies]
+psa-core = { workspace = true }
+psa-ui = { workspace = true }
+psa-crm = { workspace = true }
+dioxus = { workspace = true }
+serde = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+dotenvy = { workspace = true }
+tokio = { workspace = true }

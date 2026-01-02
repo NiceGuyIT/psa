@@ -1,0 +1,27 @@
+[package]
+name = "psa-calendar"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Calendar module for PSA Platform - scheduling, events, availability"
+
+[features]
+default = ["server"]
+server = ["dep:axum", "dep:sqlx", "psa-core/server"]
+web = ["psa-core/web"]
+fullstack = ["server", "web"]
+
+[dependencies]
+psa-core = { workspace = true }
+psa-ui = { workspace = true }
+dioxus = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+cron = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+axum = { workspace = true, optional = true }
+sqlx = { workspace = true, optional = true }

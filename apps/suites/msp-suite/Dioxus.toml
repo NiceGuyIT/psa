@@ -1,0 +1,16 @@
+[application]
+name = "msp-suite"
+default_platform = "fullstack"
+
+[web.app]
+title = "MSP Suite - Professional Services Automation"
+
+[web.watcher]
+reload_html = true
+watch_path = ["src", "../../crates"]
+
+[web.resource]
+style = ["/assets/styles.css"]
+
+[[web.proxy]]
+backend = "http://localhost:8080/api"

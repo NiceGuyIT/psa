@@ -1,0 +1,30 @@
+[package]
+name = "codex"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Codex - Standalone knowledge base application"
+
+[[bin]]
+name = "codex"
+path = "src/main.rs"
+
+[features]
+default = ["fullstack"]
+server = ["dioxus/server", "psa-core/server", "psa-knowledge-base/server"]
+web = ["psa-core/web", "psa-knowledge-base/web"]
+fullstack = ["server", "web"]
+
+[dependencies]
+psa-core = { workspace = true }
+psa-ui = { workspace = true }
+psa-knowledge-base = { workspace = true }
+dioxus = { workspace = true }
+serde = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+dotenvy = { workspace = true }
+tokio = { workspace = true }

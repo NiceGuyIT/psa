@@ -1,0 +1,94 @@
+[package]
+name = "msp-suite"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "MSP Suite - Complete Professional Services Automation for Managed Service Providers"
+
+[[bin]]
+name = "msp-suite"
+path = "src/main.rs"
+
+[features]
+default = ["fullstack", "all-modules"]
+server = [
+    "dioxus/server",
+    "psa-core/server",
+    "psa-ticketing/server",
+    "psa-time-tracking?/server",
+    "psa-projects?/server",
+    "psa-crm?/server",
+    "psa-billing?/server",
+    "psa-assets?/server",
+    "psa-knowledge-base?/server",
+    "psa-calendar?/server",
+]
+web = [
+    "psa-core/web",
+    "psa-ticketing/web",
+]
+fullstack = ["server", "web"]
+
+# Module features - enable/disable specific modules
+all-modules = [
+    "ticketing",
+    "time-tracking",
+    "projects",
+    "crm",
+    "billing",
+    "assets",
+    "knowledge-base",
+    "calendar",
+]
+ticketing = ["dep:psa-ticketing"]
+time-tracking = ["dep:psa-time-tracking"]
+projects = ["dep:psa-projects"]
+crm = ["dep:psa-crm"]
+billing = ["dep:psa-billing"]
+assets = ["dep:psa-assets"]
+knowledge-base = ["dep:psa-knowledge-base"]
+calendar = ["dep:psa-calendar"]
+
+# Deployment modes
+saas = ["psa-core/saas"]
+single-tenant = ["psa-core/single-tenant"]
+
+[dependencies]
+# Core crates (always required)
+psa-core = { workspace = true }
+psa-ui = { workspace = true }
+
+# Module crates (optional based on features)
+psa-ticketing = { workspace = true, optional = true }
+psa-time-tracking = { workspace = true, optional = true }
+psa-projects = { workspace = true, optional = true }
+psa-crm = { workspace = true, optional = true }
+psa-billing = { workspace = true, optional = true }
+psa-assets = { workspace = true, optional = true }
+psa-knowledge-base = { workspace = true, optional = true }
+psa-calendar = { workspace = true, optional = true }
+
+# Dioxus framework
+dioxus = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# UUID
+uuid = { workspace = true }
+
+# Date/Time
+chrono = { workspace = true }
+
+# Logging
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+# Environment
+dotenvy = { workspace = true }
+
+# Server dependencies
+axum = { workspace = true }
+tokio = { workspace = true }

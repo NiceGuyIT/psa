@@ -1,0 +1,59 @@
+[package]
+name = "psa-core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Core shared functionality for PSA Platform - auth, tenants, notifications, audit"
+
+[features]
+default = ["server"]
+server = ["dep:axum", "dep:sqlx", "dep:argon2", "dep:jsonwebtoken", "dep:lettre", "dep:tower", "dep:tower-http"]
+web = ["dep:gloo-net", "dep:wasm-bindgen", "dep:web-sys"]
+fullstack = ["server", "web"]
+
+# Deployment modes
+saas = []           # Multi-tenant SaaS mode
+single-tenant = []  # Self-hosted single tenant
+standalone = []     # Individual standalone app mode
+
+[dependencies]
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# UUID
+uuid = { workspace = true }
+
+# Date/Time
+chrono = { workspace = true }
+
+# Error handling
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+
+# Validation
+validator = { workspace = true }
+
+# Logging
+tracing = { workspace = true }
+
+# Async
+tokio = { workspace = true }
+
+# Server-side dependencies (optional)
+axum = { workspace = true, optional = true }
+sqlx = { workspace = true, optional = true }
+argon2 = { workspace = true, optional = true }
+jsonwebtoken = { workspace = true, optional = true }
+lettre = { workspace = true, optional = true }
+tower = { workspace = true, optional = true }
+tower-http = { workspace = true, optional = true }
+
+# Client-side dependencies (optional)
+gloo-net = { workspace = true, optional = true }
+wasm-bindgen = { workspace = true, optional = true }
+web-sys = { workspace = true, optional = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }

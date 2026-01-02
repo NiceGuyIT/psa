@@ -2,6 +2,25 @@
 <module type="EMPTY_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/apps/standalone/cadence/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/standalone/codex/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/standalone/ledger/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/standalone/milestones/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/standalone/rapport/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/standalone/registry/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/standalone/resolver/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/standalone/tempo/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/suites/msp-suite/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/psa-assets/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/psa-billing/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/psa-calendar/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/psa-core/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/psa-crm/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/psa-knowledge-base/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/psa-projects/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/psa-ticketing/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/psa-time-tracking/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/psa-ui/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/target" />

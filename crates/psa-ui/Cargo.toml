@@ -1,0 +1,27 @@
+[package]
+name = "psa-ui"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Shared UI components for PSA Platform built with Dioxus"
+
+[features]
+default = []
+
+[dependencies]
+# Dioxus framework
+dioxus = { workspace = true }
+
+# Shared core types
+psa-core = { workspace = true, default-features = false }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# UUID
+uuid = { workspace = true }
+
+# Date/Time
+chrono = { workspace = true }
