@@ -10,19 +10,19 @@ PSA Platform is a fullstack Professional Services Automation application for Man
 
 ```bash
 # Install dependencies
-npm install
+bun install
 
 # Development (starts Tailwind watcher + Dioxus dev server on http://localhost:8080)
-npm run dev
+bun run dev
 
 # Production build (optimized release binary)
-npm run build
+bun run build
 
 # Build CSS only
-npm run build:css
+bun run build:css
 
 # Watch CSS only
-npm run watch:css
+bun run watch:css
 ```
 
 ## Database

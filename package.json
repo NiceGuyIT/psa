@@ -6,7 +6,7 @@
     "build:css": "tailwindcss -i ./input.css -o ./assets/styles.css --minify",
     "watch:css": "tailwindcss -i ./input.css -o ./assets/styles.css --watch",
     "dev": "concurrently \"bun run watch:css\" \"dx serve\"",
-    "build": "npm run build:css && dx build --release"
+    "build": "bun run build:css && dx build --release"
   },
   "devDependencies": {
     "tailwindcss": "^4.0.0",

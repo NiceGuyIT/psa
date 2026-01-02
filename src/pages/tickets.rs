@@ -7,8 +7,8 @@ use crate::components::{
     Select, SelectOption, Badge, BadgeVariant,
     DataTable, Table, TableHead, TableBody, TableRow, TableHeader, TableCell,
     EmptyState, Modal, Textarea,
+    PlusIcon, IconSize, ClockIcon, UserCircleIcon,
 };
-use crate::components::icons::*;
 use crate::Route;
 
 /// Ticket list page

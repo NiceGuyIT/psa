@@ -2,8 +2,7 @@
 
 use dioxus::prelude::*;
 
-use crate::components::{AppLayout, Button, ButtonVariant, Card, PageHeader, Badge, BadgeVariant};
-use crate::components::icons::*;
+use crate::components::{AppLayout, Button, ButtonVariant, Card, PageHeader, Badge, BadgeVariant, ChartIcon, IconSize};
 use crate::Route;
 
 /// Reports home page

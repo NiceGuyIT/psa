@@ -90,7 +90,6 @@ pub async fn require_auth(
 #[derive(Clone)]
 pub struct RequireAuth(pub CurrentUser);
 
-#[axum::async_trait]
 impl<S> axum::extract::FromRequestParts<S> for RequireAuth
 where
     S: Send + Sync,
@@ -118,7 +117,6 @@ where
 #[derive(Clone)]
 pub struct RequireRole<const ROLES: &'static [&'static str]>(pub CurrentUser);
 
-#[axum::async_trait]
 impl<S, const ROLES: &'static [&'static str]> axum::extract::FromRequestParts<S>
     for RequireRole<ROLES>
 where

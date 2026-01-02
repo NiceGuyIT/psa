@@ -5,8 +5,8 @@ use dioxus::prelude::*;
 use crate::components::{
     AppLayout, Button, ButtonVariant, Card, PageHeader, SearchInput,
     Badge, BadgeVariant, DataTable, Table, TableHead, TableBody, TableRow, TableHeader, TableCell,
+    PlusIcon, IconSize, BookIcon,
 };
-use crate::components::icons::*;
 use crate::Route;
 
 /// Knowledge base home page

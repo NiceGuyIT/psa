@@ -269,7 +269,7 @@ pub fn Pagination(props: PaginationProps) -> Element {
     let end_item = std::cmp::min(props.current_page * props.per_page, props.total_items);
 
     if total_pages <= 1 {
-        return None;
+        return rsx! {};
     }
 
     let page_numbers: Vec<usize> = {

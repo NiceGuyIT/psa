@@ -431,3 +431,194 @@ pub struct JwtClaims {
     /// Session ID
     pub sid: Uuid,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_user_role_is_admin() {
+        assert!(UserRole::SuperAdmin.is_admin());
+        assert!(UserRole::Admin.is_admin());
+        assert!(!UserRole::Manager.is_admin());
+        assert!(!UserRole::Technician.is_admin());
+    }
+
+    #[test]
+    fn test_user_role_can_manage_users() {
+        assert!(UserRole::SuperAdmin.can_manage_users());
+        assert!(UserRole::Admin.can_manage_users());
+        assert!(UserRole::Manager.can_manage_users());
+        assert!(!UserRole::Technician.can_manage_users());
+        assert!(!UserRole::Sales.can_manage_users());
+    }
+
+    #[test]
+    fn test_user_role_can_view_financials() {
+        assert!(UserRole::SuperAdmin.can_view_financials());
+        assert!(UserRole::Admin.can_view_financials());
+        assert!(UserRole::Manager.can_view_financials());
+        assert!(UserRole::Finance.can_view_financials());
+        assert!(!UserRole::Technician.can_view_financials());
+        assert!(!UserRole::Dispatcher.can_view_financials());
+    }
+
+    #[test]
+    fn test_user_role_can_manage_billing() {
+        assert!(UserRole::SuperAdmin.can_manage_billing());
+        assert!(UserRole::Admin.can_manage_billing());
+        assert!(UserRole::Finance.can_manage_billing());
+        assert!(!UserRole::Manager.can_manage_billing());
+        assert!(!UserRole::Technician.can_manage_billing());
+    }
+
+    #[test]
+    fn test_user_role_from_str() {
+        assert_eq!(UserRole::from_str("admin"), Some(UserRole::Admin));
+        assert_eq!(UserRole::from_str("super_admin"), Some(UserRole::SuperAdmin));
+        assert_eq!(UserRole::from_str("technician"), Some(UserRole::Technician));
+        assert_eq!(UserRole::from_str("invalid"), None);
+    }
+
+    #[test]
+    fn test_user_role_as_str() {
+        assert_eq!(UserRole::Admin.as_str(), "admin");
+        assert_eq!(UserRole::SuperAdmin.as_str(), "super_admin");
+        assert_eq!(UserRole::Technician.as_str(), "technician");
+    }
+
+    #[test]
+    fn test_user_role_display() {
+        assert_eq!(format!("{}", UserRole::Admin), "admin");
+        assert_eq!(format!("{}", UserRole::Manager), "manager");
+    }
+
+    #[test]
+    fn test_user_status_from_str() {
+        assert_eq!(UserStatus::from_str("active"), Some(UserStatus::Active));
+        assert_eq!(UserStatus::from_str("inactive"), Some(UserStatus::Inactive));
+        assert_eq!(UserStatus::from_str("pending"), Some(UserStatus::Pending));
+        assert_eq!(UserStatus::from_str("unknown"), None);
+    }
+
+    #[test]
+    fn test_auth_state_default() {
+        let state = AuthState::default();
+        assert!(!state.is_authenticated);
+        assert!(state.user.is_none());
+        assert!(state.tenant_id.is_none());
+    }
+
+    #[test]
+    fn test_auth_state_authenticated() {
+        let user = CurrentUser {
+            id: Uuid::new_v4(),
+            tenant_id: Uuid::new_v4(),
+            email: "test@example.com".to_string(),
+            first_name: "Test".to_string(),
+            last_name: "User".to_string(),
+            role: UserRole::Admin,
+            timezone: "UTC".to_string(),
+            avatar_url: None,
+        };
+        let tenant_id = user.tenant_id;
+
+        let state = AuthState::authenticated(user, tenant_id);
+        assert!(state.is_authenticated);
+        assert!(state.user.is_some());
+        assert_eq!(state.tenant_id, Some(tenant_id));
+    }
+
+    #[test]
+    fn test_auth_state_has_role() {
+        let user = CurrentUser {
+            id: Uuid::new_v4(),
+            tenant_id: Uuid::new_v4(),
+            email: "admin@example.com".to_string(),
+            first_name: "Admin".to_string(),
+            last_name: "User".to_string(),
+            role: UserRole::Admin,
+            timezone: "UTC".to_string(),
+            avatar_url: None,
+        };
+        let tenant_id = user.tenant_id;
+        let state = AuthState::authenticated(user, tenant_id);
+
+        assert!(state.has_role(UserRole::Admin));
+        assert!(!state.has_role(UserRole::Technician));
+        assert!(state.is_admin());
+    }
+
+    #[test]
+    fn test_current_user_full_name() {
+        let user = CurrentUser {
+            id: Uuid::new_v4(),
+            tenant_id: Uuid::new_v4(),
+            email: "john.doe@example.com".to_string(),
+            first_name: "John".to_string(),
+            last_name: "Doe".to_string(),
+            role: UserRole::Technician,
+            timezone: "America/New_York".to_string(),
+            avatar_url: None,
+        };
+
+        assert_eq!(user.full_name(), "John Doe");
+    }
+
+    #[test]
+    fn test_current_user_initials() {
+        let user = CurrentUser {
+            id: Uuid::new_v4(),
+            tenant_id: Uuid::new_v4(),
+            email: "john.doe@example.com".to_string(),
+            first_name: "John".to_string(),
+            last_name: "Doe".to_string(),
+            role: UserRole::Technician,
+            timezone: "UTC".to_string(),
+            avatar_url: None,
+        };
+
+        assert_eq!(user.initials(), "JD");
+    }
+
+    #[test]
+    fn test_auth_state_require_user() {
+        let empty_state = AuthState::default();
+        assert!(empty_state.require_user().is_err());
+
+        let user = CurrentUser {
+            id: Uuid::new_v4(),
+            tenant_id: Uuid::new_v4(),
+            email: "test@example.com".to_string(),
+            first_name: "Test".to_string(),
+            last_name: "User".to_string(),
+            role: UserRole::Admin,
+            timezone: "UTC".to_string(),
+            avatar_url: None,
+        };
+        let tenant_id = user.tenant_id;
+        let auth_state = AuthState::authenticated(user, tenant_id);
+        assert!(auth_state.require_user().is_ok());
+    }
+
+    #[test]
+    fn test_auth_state_require_tenant() {
+        let empty_state = AuthState::default();
+        assert!(empty_state.require_tenant().is_err());
+
+        let user = CurrentUser {
+            id: Uuid::new_v4(),
+            tenant_id: Uuid::new_v4(),
+            email: "test@example.com".to_string(),
+            first_name: "Test".to_string(),
+            last_name: "User".to_string(),
+            role: UserRole::Admin,
+            timezone: "UTC".to_string(),
+            avatar_url: None,
+        };
+        let tenant_id = user.tenant_id;
+        let auth_state = AuthState::authenticated(user, tenant_id);
+        assert!(auth_state.require_tenant().is_ok());
+        assert_eq!(auth_state.require_tenant().unwrap(), tenant_id);
+    }
+}

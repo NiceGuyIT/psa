@@ -109,14 +109,14 @@ pub fn use_paginated_fetch<T, F, Fut>(
     fetch_fn: F,
     initial_page: usize,
     per_page: usize,
-) -> (Signal<FetchState<PaginatedData<T>>>, Signal<usize>, impl Fn(usize))
+) -> (Signal<FetchState<PaginatedData<T>>>, Signal<usize>, impl FnMut(usize))
 where
     T: Clone + 'static,
     F: Fn(usize, usize) -> Fut + Clone + 'static,
     Fut: Future<Output = Result<PaginatedData<T>, String>> + 'static,
 {
     let mut state = use_signal(FetchState::<PaginatedData<T>>::default);
-    let page = use_signal(|| initial_page);
+    let mut page = use_signal(|| initial_page);
     let fetch_fn_clone = fetch_fn.clone();
 
     // Fetch when page changes

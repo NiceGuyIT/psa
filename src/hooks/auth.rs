@@ -127,7 +127,9 @@ pub fn use_login_form() -> (Signal<LoginFormState>, impl Fn()) {
                     email: state.email.clone(),
                     first_name: "Demo".to_string(),
                     last_name: "User".to_string(),
-                    role: "admin".to_string(),
+                    role: crate::modules::auth::UserRole::Admin,
+                    timezone: "UTC".to_string(),
+                    avatar_url: None,
                 });
                 auth.write().is_loading = false;
 
@@ -142,7 +144,7 @@ pub fn use_login_form() -> (Signal<LoginFormState>, impl Fn()) {
 }
 
 /// Hook for logout
-pub fn use_logout() -> impl Fn() {
+pub fn use_logout() -> impl FnMut() {
     let mut auth = use_auth();
     let navigator = use_navigator();
 

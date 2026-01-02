@@ -9,7 +9,7 @@ use crate::Route;
 /// Login page component
 #[component]
 pub fn LoginPage() -> Element {
-    let (form_state, submit) = use_login_form();
+    let (mut form_state, submit) = use_login_form();
 
     rsx! {
         AuthLayout {

@@ -6,8 +6,8 @@ use crate::components::{
     AppLayout, Button, ButtonVariant, Card, PageHeader, SearchInput,
     Select, SelectOption, Badge, BadgeVariant,
     DataTable, Table, TableHead, TableBody, TableRow, TableHeader, TableCell,
+    PlusIcon, IconSize, ChevronRightIcon,
 };
-use crate::components::icons::*;
 use crate::Route;
 
 /// Time entry list page
@@ -262,7 +262,10 @@ pub fn TimeEntryNewPage() -> Element {
                         label: "Billable",
                         checked: *is_billable.read(),
                         help: "Mark this time entry as billable to the customer",
-                        onchange: move |_| is_billable.set(!*is_billable.read()),
+                        onchange: move |_| {
+                            let current = *is_billable.read();
+                            is_billable.set(!current);
+                        },
                     }
 
                     div { class: "flex justify-end space-x-3",

@@ -5,8 +5,8 @@ use dioxus::prelude::*;
 use crate::components::{
     AppLayout, Card, PageHeader, StatCard, Badge, BadgeVariant,
     Table, TableHead, TableBody, TableRow, TableHeader, TableCell,
+    TicketIcon, ClockIcon, FolderIcon, CurrencyIcon,
 };
-use crate::components::icons::*;
 use crate::Route;
 
 /// Main dashboard page component

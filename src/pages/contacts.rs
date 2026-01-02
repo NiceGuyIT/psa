@@ -6,8 +6,8 @@ use crate::components::{
     AppLayout, Button, ButtonVariant, Card, PageHeader, SearchInput,
     Select, SelectOption, Badge, BadgeVariant,
     DataTable, Table, TableHead, TableBody, TableRow, TableHeader, TableCell,
+    PlusIcon, IconSize,
 };
-use crate::components::icons::*;
 use crate::Route;
 
 /// Company list page

@@ -2,8 +2,7 @@
 
 use dioxus::prelude::*;
 
-use crate::components::{AppLayout, Button, ButtonVariant, Card, PageHeader, Badge, BadgeVariant};
-use crate::components::icons::*;
+use crate::components::{AppLayout, Button, ButtonVariant, Card, PageHeader, Badge, BadgeVariant, PlusIcon, IconSize, ChevronRightIcon};
 use crate::Route;
 
 /// Calendar page
@@ -195,7 +194,10 @@ fn CalendarDay(props: CalendarDayProps) -> Element {
                     }
                 }
                 if props.events.len() > 2 {
-                    span { class: "text-xs text-gray-500", "+{} more", props.events.len() - 2 }
+                    {
+                        let remaining = props.events.len() - 2;
+                        rsx! { span { class: "text-xs text-gray-500", "+{remaining} more" } }
+                    }
                 }
             }
         }

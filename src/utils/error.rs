@@ -342,3 +342,127 @@ impl From<std::io::Error> for AppError {
         Self::File(err.to_string())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_app_error_status_codes() {
+        assert_eq!(AppError::Unauthorized.status_code(), 401);
+        assert_eq!(AppError::Forbidden("test".to_string()).status_code(), 403);
+        assert_eq!(AppError::NotFound("test".to_string()).status_code(), 404);
+        assert_eq!(
+            AppError::Validation {
+                message: "test".to_string(),
+                errors: vec![]
+            }
+            .status_code(),
+            422
+        );
+        assert_eq!(AppError::Conflict("test".to_string()).status_code(), 409);
+        assert_eq!(AppError::BadRequest("test".to_string()).status_code(), 400);
+        assert_eq!(AppError::RateLimited.status_code(), 429);
+        assert_eq!(AppError::Payment("test".to_string()).status_code(), 402);
+    }
+
+    #[test]
+    fn test_app_error_codes() {
+        assert_eq!(AppError::Unauthorized.error_code(), "UNAUTHORIZED");
+        assert_eq!(AppError::Forbidden("test".to_string()).error_code(), "FORBIDDEN");
+        assert_eq!(AppError::NotFound("test".to_string()).error_code(), "NOT_FOUND");
+        assert_eq!(AppError::RateLimited.error_code(), "RATE_LIMITED");
+    }
+
+    #[test]
+    fn test_field_error_creation() {
+        let error = FieldError::new("email", "Invalid email", "invalid_email");
+        assert_eq!(error.field, "email");
+        assert_eq!(error.message, "Invalid email");
+        assert_eq!(error.code, "invalid_email");
+    }
+
+    #[test]
+    fn test_validation_error_creation() {
+        let error = AppError::validation(
+            "Form validation failed",
+            vec![FieldError::new("email", "Required", "required")],
+        );
+
+        match error {
+            AppError::Validation { message, errors } => {
+                assert_eq!(message, "Form validation failed");
+                assert_eq!(errors.len(), 1);
+                assert_eq!(errors[0].field, "email");
+            }
+            _ => panic!("Expected Validation error"),
+        }
+    }
+
+    #[test]
+    fn test_validation_field_error() {
+        let error = AppError::validation_field("username", "Username is required");
+
+        match error {
+            AppError::Validation { message, errors } => {
+                assert_eq!(message, "Validation failed");
+                assert_eq!(errors.len(), 1);
+                assert_eq!(errors[0].field, "username");
+                assert_eq!(errors[0].message, "Username is required");
+            }
+            _ => panic!("Expected Validation error"),
+        }
+    }
+
+    #[test]
+    fn test_not_found_error() {
+        let error = AppError::not_found("User");
+        match error {
+            AppError::NotFound(resource) => assert_eq!(resource, "User"),
+            _ => panic!("Expected NotFound error"),
+        }
+    }
+
+    #[test]
+    fn test_error_display() {
+        let error = AppError::NotFound("Ticket".to_string());
+        assert_eq!(error.to_string(), "Ticket not found");
+
+        let forbidden = AppError::Forbidden("You cannot access this resource".to_string());
+        assert_eq!(forbidden.to_string(), "Access denied: You cannot access this resource");
+    }
+
+    #[test]
+    fn test_error_response_from_app_error() {
+        let error = AppError::Validation {
+            message: "Validation failed".to_string(),
+            errors: vec![FieldError::new("email", "Invalid", "invalid")],
+        };
+        let response = ErrorResponse::from(error);
+
+        assert_eq!(response.error.code, "VALIDATION_ERROR");
+        assert!(response.error.errors.is_some());
+        assert_eq!(response.error.errors.unwrap().len(), 1);
+    }
+
+    #[test]
+    fn test_error_response_without_field_errors() {
+        let error = AppError::Unauthorized;
+        let response = ErrorResponse::from(error);
+
+        assert_eq!(response.error.code, "UNAUTHORIZED");
+        assert!(response.error.errors.is_none());
+    }
+
+    #[test]
+    fn test_external_service_error() {
+        let error = AppError::external_service("Stripe", "Payment failed");
+        match error {
+            AppError::ExternalService { service, message } => {
+                assert_eq!(service, "Stripe");
+                assert_eq!(message, "Payment failed");
+            }
+            _ => panic!("Expected ExternalService error"),
+        }
+    }
+}

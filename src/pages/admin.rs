@@ -5,8 +5,8 @@ use dioxus::prelude::*;
 use crate::components::{
     AppLayout, Button, ButtonVariant, Card, PageHeader,
     Badge, BadgeVariant, DataTable, Table, TableHead, TableBody, TableRow, TableHeader, TableCell,
+    PlusIcon, IconSize,
 };
-use crate::components::icons::*;
 
 /// Tenant management page (multi-tenant mode only)
 #[cfg(feature = "multi-tenant")]

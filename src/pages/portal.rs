@@ -5,9 +5,8 @@ use dioxus::prelude::*;
 use crate::components::{
     PortalLayout, Button, ButtonVariant, Card, PageHeader,
     Badge, BadgeVariant, DataTable, Table, TableHead, TableBody, TableRow, TableHeader, TableCell,
-    SearchInput,
+    SearchInput, PlusIcon, IconSize, BookIcon, CurrencyIcon,
 };
-use crate::components::icons::*;
 use crate::Route;
 
 /// Portal home page

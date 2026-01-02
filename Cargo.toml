@@ -13,13 +13,13 @@ default = ["multi-tenant", "server", "web"]
 multi-tenant = []
 single-tenant = []
 # Build targets
-server = ["dioxus/server", "dep:axum", "dep:tower", "dep:tower-http", "dep:sqlx", "dep:lettre"]
-web = ["dioxus/web"]
+server = ["dioxus/server", "dioxus/fullstack", "dep:axum", "dep:tower", "dep:tower-http", "dep:sqlx", "dep:lettre", "dep:governor", "dep:moka", "dep:rust_decimal"]
+web = ["dioxus/web", "uuid/js"]
 fullstack = ["server", "web"]
 
 [dependencies]
 # Dioxus - fullstack framework
-dioxus = { version = "0.7.2", features = ["fullstack", "router"] }
+dioxus = { version = "0.7.2", features = ["router"] }
 
 # Axum - HTTP server (server-side only)
 axum = { version = "0.8.3", features = ["macros", "multipart", "ws"], optional = true }
@@ -29,15 +29,13 @@ tower-http = { version = "0.6", features = ["cors", "trace", "compression-gzip",
 # Database
 sqlx = { version = "0.8", features = ["runtime-tokio", "postgres", "uuid", "chrono", "json", "migrate"], optional = true }
 
-# Async runtime
-tokio = { version = "1", features = ["full"] }
-
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
 # UUID
 uuid = { version = "1.11", features = ["v4", "v7", "serde"] }
+getrandom = { version = "0.3", features = ["wasm_js"] }
 
 # Date/Time
 chrono = { version = "0.4", features = ["serde"] }
@@ -73,17 +71,18 @@ aes-gcm = "0.10"
 base64 = "0.22"
 rand = "0.9"
 
-# Rate limiting
-governor = "0.8"
+# Rate limiting (server-only)
+governor = { version = "0.8", optional = true }
 
-# Caching
-moka = { version = "0.12", features = ["future"] }
+# Caching (server-only)
+moka = { version = "0.12", features = ["future"], optional = true }
 
-# Webhook/HTTP client for notifications
-# (reqwest already included above)
+# Decimal for financial calculations (server-only)
+rust_decimal = { version = "1", features = ["db-postgres", "serde"], optional = true }
 
 # WASM specific (client-side)
 gloo-net = "0.6"
+gloo-timers = { version = "0.3", features = ["futures"] }
 wasm-bindgen = "0.2"
 web-sys = { version = "0.3", features = ["Window", "Document", "Storage", "Navigator"] }
 js-sys = "0.3"
@@ -103,11 +102,18 @@ cron = "0.15"
 # URL parsing
 url = "2"
 
+# Async runtime - platform specific
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+tokio = { version = "1", features = ["full"] }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+tokio = { version = "1", default-features = false }
+
 [build-dependencies]
 # For build scripts if needed
 
-[dev-dependencies]
-# Testing
+# Testing (server-only due to tokio requirements)
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 tokio-test = "0.4"
 fake = { version = "3", features = ["derive", "uuid", "chrono"] }
 wiremock = "0.6"

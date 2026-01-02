@@ -14,8 +14,7 @@ pub struct CardProps {
     #[props(default)]
     title: String,
     /// Optional header actions
-    #[props(default)]
-    actions: Element,
+    actions: Option<Element>,
     /// Whether to add padding
     #[props(default = true)]
     padding: bool,
@@ -49,8 +48,7 @@ pub struct CardHeaderProps {
     title: String,
     #[props(default)]
     subtitle: String,
-    #[props(default)]
-    actions: Element,
+    actions: Option<Element>,
     #[props(default)]
     class: String,
 }
@@ -89,8 +87,7 @@ pub struct StatCardProps {
     /// Stat value
     value: String,
     /// Optional icon
-    #[props(default)]
-    icon: Element,
+    icon: Option<Element>,
     /// Optional change indicator (e.g., "+12%")
     #[props(default)]
     change: String,
@@ -118,9 +115,9 @@ pub fn StatCard(props: StatCardProps) -> Element {
     rsx! {
         div { class: "{class}",
             div { class: "flex items-center",
-                if let Some(icon) = props.icon.as_ref() {
+                if let Some(ref icon) = props.icon {
                     div { class: "flex-shrink-0 p-3 bg-blue-100 dark:bg-blue-900 rounded-full",
-                        {icon.clone()}
+                        {icon}
                     }
                 }
                 div { class: if props.icon.is_some() { "ml-4" } else { "" },
@@ -148,8 +145,7 @@ pub fn StatCard(props: StatCardProps) -> Element {
 pub struct InfoCardProps {
     title: String,
     description: String,
-    #[props(default)]
-    icon: Element,
+    icon: Option<Element>,
     #[props(default)]
     class: String,
 }
@@ -164,9 +160,9 @@ pub fn InfoCard(props: InfoCardProps) -> Element {
     rsx! {
         div { class: "{class}",
             div { class: "flex items-start",
-                if let Some(icon) = props.icon.as_ref() {
+                if let Some(ref icon) = props.icon {
                     div { class: "flex-shrink-0",
-                        {icon.clone()}
+                        {icon}
                     }
                 }
                 div { class: if props.icon.is_some() { "ml-3" } else { "" },

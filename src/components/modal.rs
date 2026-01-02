@@ -43,15 +43,14 @@ pub struct ModalProps {
     /// Close handler
     onclose: EventHandler<()>,
     /// Optional footer actions
-    #[props(default)]
-    footer: Element,
+    footer: Option<Element>,
 }
 
 /// Modal dialog component
 #[component]
 pub fn Modal(props: ModalProps) -> Element {
     if !props.open {
-        return None;
+        return rsx! {};
     }
 
     let size_class = props.size.class();
@@ -87,10 +86,10 @@ pub fn Modal(props: ModalProps) -> Element {
                         {props.children}
                     }
 
-                    // Footer
-                    if let Some(footer) = props.footer.as_ref() {
+                    // Footer (optional)
+                    if let Some(ref footer) = props.footer {
                         div { class: "px-4 py-3 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3",
-                            {footer.clone()}
+                            {footer}
                         }
                     }
                 }
@@ -348,7 +347,7 @@ pub struct SlideOverProps {
 #[component]
 pub fn SlideOver(props: SlideOverProps) -> Element {
     if !props.open {
-        return None;
+        return rsx! {};
     }
 
     rsx! {

@@ -169,3 +169,155 @@ impl FilterParams {
             || self.tags.is_some()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_pagination_params_defaults() {
+        // Note: Rust Default gives 0 for u32, serde defaults are only for deserialization
+        let params = PaginationParams::default();
+        assert_eq!(params.page, 0);
+        assert_eq!(params.per_page, 0);
+        assert!(params.sort_dir.is_empty());
+
+        // Test that per_page() clamps to minimum of 1
+        assert_eq!(params.per_page(), 1);
+    }
+
+    #[test]
+    fn test_pagination_offset() {
+        let params = PaginationParams {
+            page: 3,
+            per_page: 10,
+            ..Default::default()
+        };
+        assert_eq!(params.offset(), 20);
+
+        let first_page = PaginationParams {
+            page: 1,
+            per_page: 25,
+            ..Default::default()
+        };
+        assert_eq!(first_page.offset(), 0);
+    }
+
+    #[test]
+    fn test_pagination_per_page_clamping() {
+        let over_max = PaginationParams {
+            per_page: 500,
+            ..Default::default()
+        };
+        assert_eq!(over_max.per_page(), PaginationParams::MAX_PER_PAGE);
+
+        let zero = PaginationParams {
+            per_page: 0,
+            ..Default::default()
+        };
+        assert_eq!(zero.per_page(), 1);
+    }
+
+    #[test]
+    fn test_is_ascending() {
+        let asc = PaginationParams {
+            sort_dir: "asc".to_string(),
+            ..Default::default()
+        };
+        assert!(asc.is_ascending());
+
+        let desc = PaginationParams {
+            sort_dir: "desc".to_string(),
+            ..Default::default()
+        };
+        assert!(!desc.is_ascending());
+
+        let asc_upper = PaginationParams {
+            sort_dir: "ASC".to_string(),
+            ..Default::default()
+        };
+        assert!(asc_upper.is_ascending());
+    }
+
+    #[test]
+    fn test_order_by() {
+        let params = PaginationParams {
+            sort: Some("name".to_string()),
+            sort_dir: "asc".to_string(),
+            ..Default::default()
+        };
+        let allowed = &["name", "created_at", "updated_at"];
+        assert_eq!(params.order_by("created_at", allowed), "name ASC");
+
+        let invalid_sort = PaginationParams {
+            sort: Some("invalid_field".to_string()),
+            ..Default::default()
+        };
+        assert_eq!(invalid_sort.order_by("created_at", allowed), "created_at DESC");
+    }
+
+    #[test]
+    fn test_paginated_response() {
+        let data = vec![1, 2, 3, 4, 5];
+        let response = PaginatedResponse::new(data, 1, 5, 20);
+
+        assert_eq!(response.data.len(), 5);
+        assert_eq!(response.meta.page, 1);
+        assert_eq!(response.meta.per_page, 5);
+        assert_eq!(response.meta.total, 20);
+        assert_eq!(response.meta.total_pages, 4);
+        assert!(response.meta.has_next);
+        assert!(!response.meta.has_prev);
+    }
+
+    #[test]
+    fn test_paginated_response_last_page() {
+        let data = vec![1, 2];
+        let response = PaginatedResponse::new(data, 4, 5, 17);
+
+        assert_eq!(response.meta.page, 4);
+        assert_eq!(response.meta.total_pages, 4);
+        assert!(!response.meta.has_next);
+        assert!(response.meta.has_prev);
+    }
+
+    #[test]
+    fn test_paginated_response_map() {
+        let data = vec![1, 2, 3];
+        let response = PaginatedResponse::new(data, 1, 10, 3);
+        let mapped = response.map(|x| x * 2);
+
+        assert_eq!(mapped.data, vec![2, 4, 6]);
+        assert_eq!(mapped.meta.total, 3);
+    }
+
+    #[test]
+    fn test_filter_params_tags() {
+        let params = FilterParams {
+            tags: Some("tag1, tag2, tag3".to_string()),
+            ..Default::default()
+        };
+        assert_eq!(params.tags_vec(), vec!["tag1", "tag2", "tag3"]);
+
+        let empty = FilterParams::default();
+        assert!(empty.tags_vec().is_empty());
+    }
+
+    #[test]
+    fn test_filter_params_has_filters() {
+        let empty = FilterParams::default();
+        assert!(!empty.has_filters());
+
+        let with_query = FilterParams {
+            q: Some("search".to_string()),
+            ..Default::default()
+        };
+        assert!(with_query.has_filters());
+
+        let with_status = FilterParams {
+            status: Some("active".to_string()),
+            ..Default::default()
+        };
+        assert!(with_status.has_filters());
+    }
+}

@@ -347,19 +347,17 @@ pub struct PageHeaderProps {
     title: String,
     #[props(default)]
     subtitle: String,
-    #[props(default)]
-    actions: Element,
-    #[props(default)]
-    breadcrumbs: Element,
+    actions: Option<Element>,
+    breadcrumbs: Option<Element>,
 }
 
 #[component]
 pub fn PageHeader(props: PageHeaderProps) -> Element {
     rsx! {
         div { class: "mb-6",
-            if let Some(breadcrumbs) = props.breadcrumbs.as_ref() {
+            if let Some(ref breadcrumbs) = props.breadcrumbs {
                 div { class: "mb-2",
-                    {breadcrumbs.clone()}
+                    {breadcrumbs}
                 }
             }
             div { class: "md:flex md:items-center md:justify-between",
@@ -373,9 +371,9 @@ pub fn PageHeader(props: PageHeaderProps) -> Element {
                         }
                     }
                 }
-                if let Some(actions) = props.actions.as_ref() {
+                if let Some(ref actions) = props.actions {
                     div { class: "mt-4 flex md:ml-4 md:mt-0 space-x-3",
-                        {actions.clone()}
+                        {actions}
                     }
                 }
             }
@@ -429,19 +427,17 @@ pub struct EmptyStateProps {
     title: String,
     #[props(default)]
     description: String,
-    #[props(default)]
-    icon: Element,
-    #[props(default)]
-    actions: Element,
+    icon: Option<Element>,
+    actions: Option<Element>,
 }
 
 #[component]
 pub fn EmptyState(props: EmptyStateProps) -> Element {
     rsx! {
         div { class: "text-center py-12",
-            if let Some(icon) = props.icon.as_ref() {
+            if let Some(ref icon) = props.icon {
                 div { class: "mx-auto h-12 w-12 text-gray-400",
-                    {icon.clone()}
+                    {icon}
                 }
             }
             h3 { class: "mt-2 text-sm font-semibold text-gray-900 dark:text-white",
@@ -452,9 +448,9 @@ pub fn EmptyState(props: EmptyStateProps) -> Element {
                     "{props.description}"
                 }
             }
-            if let Some(actions) = props.actions.as_ref() {
+            if let Some(ref actions) = props.actions {
                 div { class: "mt-6",
-                    {actions.clone()}
+                    {actions}
                 }
             }
         }

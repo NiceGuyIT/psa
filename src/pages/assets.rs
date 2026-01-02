@@ -5,8 +5,8 @@ use dioxus::prelude::*;
 use crate::components::{
     AppLayout, Button, ButtonVariant, Card, PageHeader,
     Badge, BadgeVariant, DataTable, Table, TableHead, TableBody, TableRow, TableHeader, TableCell,
+    PlusIcon, IconSize, ExclamationIcon,
 };
-use crate::components::icons::*;
 use crate::Route;
 
 /// Asset list page
